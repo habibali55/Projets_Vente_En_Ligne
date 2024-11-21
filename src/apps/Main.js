@@ -22,6 +22,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { CgProfile } from "react-icons/cg";
 import { Menu, MenuItem } from '@mui/material'; // Importer le Menu et MenuItem
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -96,6 +97,26 @@ export default function Main() {
   const [selectedIndex, setSelectedIndex] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null); // Etat pour l'ancrage du menu
   const openMenu = Boolean(anchorEl); // Vérifier si le menu est ouvert
+  const [user, setUser] = React.useState(null); // Etat pour l'utilisateur
+
+
+  // Récupérer les informations de l'utilisateur
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await axios.get('http://localhost:9000/me', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}` // Ajouter le token d'authentification si nécessaire
+          }
+        });
+        setUser(response.data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des informations utilisateur:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -135,6 +156,7 @@ export default function Main() {
     // Rediriger l'utilisateur vers la page de connexion
     navigate('/login');
   };
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -152,8 +174,13 @@ export default function Main() {
           >
             <MenuIcon />
           </IconButton>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <img src={user?.avatar} alt="User Avatar" style={{ width: 40, height: 40, borderRadius: '50%', marginRight: 10 }} />
+            <Typography variant="h6" noWrap>
+              {user?.name}
+            </Typography>
+          </Box>
 
-          {/* Conteneur des icônes aligné à droite */}
           <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center' }}>
             <IconButton color="inherit" onClick={() => navigate("/PanierEtPaiement")}>
               <FaShoppingCart />
@@ -204,31 +231,30 @@ export default function Main() {
             </ListItem>
           ))}
         </List>
-        <Divider />
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <Outlet />
-      </Box>
 
-      {/* Menu déroulant pour l'icône du profil */}
+      {/* Menu Profile */}
       <Menu
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleMenuClose}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
       >
         <MenuItem onClick={handleProfileEdit}>Modifier le profil</MenuItem>
         <MenuItem onClick={handleProfileArchive}>Archiver</MenuItem>
-        <MenuItem onClick={handleSignOut}>Se déconnecter</MenuItem>
+        <MenuItem onClick={handleSignOut}>Déconnexion</MenuItem>
       </Menu>
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          bgcolor: 'background.default',
+          p: 3,
+          marginTop: '64px',
+        }}
+      >
+        <Outlet />
+      </Box>
     </Box>
   );
 }

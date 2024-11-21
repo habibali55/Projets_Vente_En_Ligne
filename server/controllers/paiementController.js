@@ -43,7 +43,7 @@ export const createPaiement = async (req, res) => {
       from: 'youremail@gmail.com',
       to: 'elhabibali82@gmail.com', // Email de l'administrateur
       subject: 'Nouvelle transaction de paiement',
-      text: `Une nouvelle transaction a été effectuée :\n\nNom du client : ${savedPaiement.name}\nEmail : ${savedPaiement.email}\nMontant : ${savedPaiement.montant} DT\n\nConsultez le panneau d'administration pour plus de détails.`,
+      text: `Une nouvelle transaction a été effectuée :\n\nNom du client : ${savedPaiement.name}\nEmail : ${savedPaiement.email}\nMontant : ${savedPaiement.montant} DT.`,
     };
 
     // Envoyer les emails

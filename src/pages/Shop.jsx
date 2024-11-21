@@ -13,6 +13,8 @@ import axios from 'axios';
 
 function Shop({ ajouterAuPanier }) {
   const [products, setProducts] = useState([]); // État pour stocker les produits récupérés
+  const [modalOpen, setModalOpen] = useState(false); // État pour contrôler l'ouverture du modal
+  const [currentProduct, setCurrentProduct] = useState(null); // Produit ajouté
 
   // Récupérer les produits via l'API
   useEffect(() => {
@@ -34,67 +36,97 @@ function Shop({ ajouterAuPanier }) {
 
   const handleAddToCart = (product) => {
     ajouterAuPanier(product); // Appeler la fonction ajouterAuPanier
-    alert(`${product.Name} a été ajouté au panier !`); // Afficher une alerte
+    setCurrentProduct(product); // Stocker le produit ajouté
+    setModalOpen(true); // Ouvrir le modal
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false); // Fermer le modal
   };
 
   return (
-    <MDBContainer fluid className="my-5 text-center">
-      <h4 className="mt-4 mb-5">
-        <strong>Nos Produits</strong>
-      </h4>
+    <>
+      <MDBContainer fluid className="my-5 text-center">
+        <h4 className="mt-4 mb-5">
+          <strong>Nos Produits</strong>
+        </h4>
 
-      <MDBRow>
-        {products.map((product) => (
-          <MDBCol md="6" lg="4" className="mb-4" key={product.id}>
-            <MDBCard className="d-flex flex-column h-100">
-              <MDBRipple
-                rippleColor="light"
-                rippleTag="div"
-                className="bg-image rounded hover-zoom"
-              >
-                <MDBCardImage
-                  src={product.avatar} // Utiliser le champ `avatar` pour l'image
-                  fluid
-                  className="card-img-top"
-                  style={{ height: "250px", objectFit: "cover" }}
-                />
-                <a href="#!">
-                  <div className="mask">
-                    <div className="d-flex justify-content-start align-items-end h-100">
-                      <h5>
-                        <span className="badge bg-primary ms-2">New</span>
-                      </h5>
-                    </div>
-                  </div>
-                  <div className="hover-overlay">
-                    <div
-                      className="mask"
-                      style={{ backgroundColor: "rgba(251, 251, 251, 0.15)" }}
-                    ></div>
-                  </div>
-                </a>
-              </MDBRipple>
-              <MDBCardBody className="d-flex flex-column">
-                <a href="#!" className="text-reset">
-                  <h5 className="card-title mb-3">{product.Name}</h5> {/* Nom du produit */}
-                </a>
-                <a href="#!" className="text-reset">
-                  <p>{product.Description}</p> {/* Description du produit */}
-                </a>
-                <h6 className="mt-auto mb-3">{product.Prix}</h6> {/* Prix du produit */}
-                <h6 className="mt-auto mb-3">{product.Status}</h6>
-                <button
-                  className="btn btn-primary mt-auto"
-                  onClick={() => handleAddToCart(product)}
+        <MDBRow>
+          {products.map((product) => (
+            <MDBCol md="6" lg="4" className="mb-4" key={product.id}>
+              <MDBCard className="d-flex flex-column h-100">
+                <MDBRipple
+                  rippleColor="light"
+                  rippleTag="div"
+                  className="bg-image rounded hover-zoom"
                 >
-                  Ajouter au panier
-                </button>
-              </MDBCardBody>
-            </MDBCard>
-          </MDBCol>
-        ))}
-      </MDBRow>
-    </MDBContainer>
+                  <MDBCardImage
+                    src={product.avatar}
+                    fluid
+                    className="card-img-top"
+                    style={{ height: "250px", objectFit: "cover" }}
+                  />
+                </MDBRipple>
+                <MDBCardBody className="d-flex flex-column">
+                  <h5 className="card-title mb-3">{product.Name}</h5>
+                  <p>{product.Description}</p>
+                  <h6 className="mt-auto mb-3">{product.Prix}</h6>
+                  <button
+                    className="btn btn-primary mt-auto"
+                    style={{ backgroundColor: '#737373', color: '#fff' }}
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Ajouter au panier
+                  </button>
+                </MDBCardBody>
+              </MDBCard>
+            </MDBCol>
+          ))}
+        </MDBRow>
+      </MDBContainer>
+
+      {/* Modal Bootstrap centré */}
+      <div
+        className={`modal fade ${modalOpen ? 'show' : ''}`}
+        style={{ display: modalOpen ? 'block' : 'none' }}
+        tabIndex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden={!modalOpen}
+      >
+        <div className="modal-dialog modal-dialog-centered"> {/* Classe pour centrer le modal */}
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Produit ajouté au panier</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+                onClick={handleCloseModal}
+              ></button>
+            </div>
+            <div className="modal-body">
+              {currentProduct && (
+                <>
+                  <p><strong>Produit :</strong> {currentProduct.Name}</p>
+                  <p><strong>Prix :</strong> {currentProduct.Prix}</p>
+                </>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn"
+                style={{ backgroundColor: '#737373', color: '#fff' }} // Couleur personnalisée pour le bouton
+                onClick={handleCloseModal}
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

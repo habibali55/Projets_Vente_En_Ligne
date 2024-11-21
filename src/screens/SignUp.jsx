@@ -4,8 +4,11 @@ import lunettes from '../assets/logo.jpg';
 import 'aos/dist/aos.css';
 import AOS from "aos";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Importez useNavigate
 
 function SignUp() {
+  const navigate = useNavigate(); // Initialisez useNavigate
+
   useEffect(() => {
     AOS.init({
       offset: 100,
@@ -44,7 +47,7 @@ function SignUp() {
         const response = await axios.post('http://localhost:9000/signup', formData);
         localStorage.setItem('token', response.data.token);
         alert('Inscription réussie !');
-        // Redirigez vers une autre page ou mettez à jour l'état de l'application
+        navigate('/');
       } catch (error) {
         console.error(error);
         alert('Erreur lors de l’inscription');
